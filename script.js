@@ -18,103 +18,72 @@ ideias para melhorar o código
     Estou tentando implementar um mutation observer no primeiro setInterval, sem sucesso
     Também pensei em separar o componente que percebe o aperto de tecla do componente que de fato move o personagem
         E organizar isso de uma forma mais interessante, simples e desacoplada
+
+    getPosicao() funciona com passaro, mas não com espaço
         
 */
 
 const   jogo = document.querySelector('[wm-flappy]'),
         passaro = document.getElementById('passaro'),
         alturaDoPassaro = passaro.clientHeight,
-        posicaoDireitaPassaro = parseFloat(passaro.getBoundingClientRect().right.toFixed(2)),
-        posicaoEsquerdaPassaro = parseFloat(passaro.getBoundingClientRect().left.toFixed(2)),
         alturaDaTela = parseFloat(document.body.clientHeight),
         observerOptions = { attributes: true }
-
-function voar() {
-    let alturaAtual = 0
-    alturaAtual += parseFloat(passaro.style['top'])
-
-    passaro.style.top = `${alturaAtual - 0.8}vh`
-}
-
-function cair() {
-    let alturaAtual = 0
-    alturaAtual += parseFloat(passaro.style['top'])
-
-    passaro.style.top = `${alturaAtual + 0.5}vh`
-}
 
 function derrota() {
     jogo.setAttribute('status', 'gameover')
 }
 
-
+function getPosicao(elemento, lado) {
+    return parseFloat(elemento.getBoundingClientRect()[lado]).toFixed(2) 
+} 
 
 function main() {
-    window.onkeydown = () => { 
-        passaro.setAttribute('movimento','voando')
-    }
-    
-    window.onkeyup = () => {
-        passaro.setAttribute('movimento','caindo')
-    }
-
-    // observa se o jogo está sendo executado
-    // verifica a posição do pássaro
-    // observa mudanças no atributo voando ou caindo (movimento)
-    // function observarMovimento() {
-
-    //     let posicaoTopoPassaro = parseFloat(passaro.offsetTop)
-
-
-    //     function callback(mutationList, observer) {
-    //         mutationList.forEach(function(mutation) {
-    //             if (mutation.type === 'attributes' && mutation.attributeName === 'movimento') {
-    //                 if (passaro.getAttribute('movimento') === 'voando') {
-    //                     posicaoTopoPassaro >= (0.008 * alturaDaTela) 
-    //                         ? voar() 
-    //                         : '';
-
-    //                 } else if( passaro.getAttribute('movimento') === 'caindo' 
-    //                             && posicaoTopoPassaro <= alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela)) {
-    //                     cair()
-    //                 } else if( posicaoTopoPassaro > alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela) ) {
-    //                     derrota()
-    //                 }
-    //             }
-    //         })
-    //     }
-
-    //     return new MutationObserver(callback)
-    // } 
-    
-    // observarMovimento().observe(passaro, observerOptions)
-
-
-    setInterval( () => {
-        if (jogo.getAttribute('status') === 'jogando') {
-
-            const posicaoTopoPassaro = parseFloat(passaro.offsetTop)
-
-            // vôo
-            if (passaro.getAttribute('movimento') === 'voando') {
-                posicaoTopoPassaro >= (0.008 * alturaDaTela) ? voar() : '';
-            } else if (
-                passaro.getAttribute('movimento') === 'caindo' 
-                && posicaoTopoPassaro <= alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela)
-            ) { cair() } 
-            
-            else if ( posicaoTopoPassaro > alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela)) {
-                derrota()
-            }
+    function observarTeclado() {
+        window.onkeydown = () => { 
+            jogo.setAttribute('key-pressed', '')
         }
-    }, 10)
+        
+        window.onkeyup = () => {
+            jogo.removeAttribute('key-pressed')
+        }
+    }
+    
+    
+    function movimentar() {
+        function voar() {
+            let alturaAtual = 0
+            alturaAtual += parseFloat(passaro.style['top'])
+            passaro.style.top = `${alturaAtual - 0.8}vh`
+        }
+        
+        function cair() {
+            let alturaAtual = 0
+            alturaAtual += parseFloat(passaro.style['top'])
+            passaro.style.top = `${alturaAtual + 0.5}vh`
+        }
+
+        setInterval(() => {
+            const posicaoTopoPassaro = getPosicao(passaro, 'top')
+            let keyPressed = jogo.hasAttribute('key-pressed')
+
+            if(jogo.getAttribute('status') === 'jogando') {
+                if (keyPressed && posicaoTopoPassaro >= (0.008 * alturaDaTela)) { voar() }
+                else if( !keyPressed && posicaoTopoPassaro <= alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela))
+                    { cair() }
+                else if( posicaoTopoPassaro > alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela))
+                    { derrota() }
+            }
+        }, 10)
+    }
+    
+    observarTeclado(); movimentar();
 
     let pontuacaoAtual = 0
 
     function criarCano() {
         const alturaCano1 = Math.floor(Math.random() * 9) + 1
         const alturaCano2 = 10- alturaCano1
-
+        
         const novoCano = document.createElement('div')
         novoCano.classList.add('cano')
         novoCano.style.right = '-14vw'
@@ -132,35 +101,40 @@ function main() {
         <div class="extensao"></div>
     </div>`;
 
-        document.body.insertBefore(novoCano, jogo)
+        // document.body.insertBefore(novoCano, jogo)
+        jogo.appendChild(novoCano)
+
+        const espaco = novoCano.querySelector('.espaco')
 
         setInterval(() => {
             if (jogo.getAttribute('status') === 'jogando') {
                 let posicao = 0
                 posicao += parseFloat(novoCano.style.right)
                 
-                posicao >= 100 ? '' : novoCano.style.right = `${posicao + 0.20}vw`
+                posicao >= 100 ? novoCano.remove() : novoCano.style.right = `${posicao + 0.20}vw`
                 
                 if(posicao == 50) {
                     pontuacaoAtual++
                     document.getElementById('pontuacao').innerText = pontuacaoAtual
                     document.getElementById('pontuacao-final').innerText = pontuacaoAtual
                 }
-                    
 
-                const posicaoTopoPassaro = parseFloat(passaro.getBoundingClientRect().top.toFixed(2))
-                const posicaoBaixoPassaro = parseFloat(passaro.getBoundingClientRect().bottom.toFixed(2))
-
-                const espaco = novoCano.querySelector('.espaco')
                 
-                // checar colisão
-                const posicaoTopoEspaco = parseFloat(espaco.getBoundingClientRect().top.toFixed(2))
-                const posicaoBaixoEspaco = parseFloat(espaco.getBoundingClientRect().bottom.toFixed(2))
-                const posicaoEsquerdaEspaco = parseFloat(espaco.getBoundingClientRect().left.toFixed(2))
-                const posicaoDireitaEspaco = parseFloat(espaco.getBoundingClientRect().right.toFixed(2))
+                // getPosicao() funciona com passaro, mas não com espaço
 
-                const contatoNoY = posicaoTopoPassaro <= posicaoTopoEspaco || posicaoBaixoPassaro >= posicaoBaixoEspaco
-                const contatoNoX = posicaoDireitaPassaro >= posicaoEsquerdaEspaco && posicaoDireitaPassaro <= posicaoDireitaEspaco
+                // checar colisão
+                const posicaoEspaco = {
+                    topo: parseFloat(espaco.getBoundingClientRect().top.toFixed(2)),
+                    baixo: parseFloat(espaco.getBoundingClientRect().bottom.toFixed(2)),
+                    esquerda: parseFloat(espaco.getBoundingClientRect().left.toFixed(2)),
+                    direita: parseFloat(espaco.getBoundingClientRect().right.toFixed(2))
+                }
+                
+                const contatoNoY = getPosicao(passaro, 'top') <= posicaoEspaco.topo 
+                    || getPosicao(passaro, 'bottom') >= posicaoEspaco.baixo
+
+                const contatoNoX = getPosicao(passaro, 'right') >= posicaoEspaco.esquerda 
+                    && getPosicao(passaro, 'right') <= posicaoEspaco.direita
 
                 if(contatoNoX && contatoNoY) {
                     derrota()
@@ -175,7 +149,7 @@ function main() {
 }
 
 window.onkeydown = () => { 
-    jogo.onkeydown = ''
+    window.onkeydown = ''
     jogo.setAttribute('status','jogando')
 }
 
@@ -191,7 +165,7 @@ function observarStatus() {
                 fundoPreto.style.display = 'block'
     
                 window.onkeydown = () => {
-                    jogo.onkeydown = ''
+                    window.onkeydown = ''
                     document.location.reload(true)
                 }
     
