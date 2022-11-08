@@ -1,12 +1,8 @@
 /* 
 ideias para melhorar o código
-    Rever seletores para tentar tornar o código mais performático
-    Usar appendChild em vez de insertBefore, e usar cloneNode para simplificar a criação de novos obstáculos
-        Excluir obstáculos depois deles passarem pela tela (talvez criando um id para cada um)
-
+    Usar cloneNode para simplificar a criação de novos obstáculos
     Rever necessidade de setIntervals e possibilidade de criação de novos Observers
     Rever nomes das variáveis e posição de declaração (para reduzir redeclarações desnecessárias)
-    Acessar elementos em JS pelos atributos personalizados, e não pelas classes ou outros seletores
 
     Usar design patterns como factory e observer para simplificar e desacoplar o projeto
         Diminuir as responsabilidades de cada componente do projeto
@@ -15,9 +11,9 @@ ideias para melhorar o código
 
     Usar função construtora para gerar novos canos
 
+    função criarCanos está uma ameba, com infinitas responsabilidades. Tentar desacoplar sem perder a referência dos novos canos
+
     Estou tentando implementar um mutation observer no primeiro setInterval, sem sucesso
-    Também pensei em separar o componente que percebe o aperto de tecla do componente que de fato move o personagem
-        E organizar isso de uma forma mais interessante, simples e desacoplada
 
     getPosicao() funciona com passaro, mas não com espaço
         
@@ -47,7 +43,6 @@ function main() {
             jogo.removeAttribute('key-pressed')
         }
     }
-    
     
     function movimentar() {
         function voar() {
@@ -101,7 +96,6 @@ function main() {
         <div class="extensao"></div>
     </div>`;
 
-        // document.body.insertBefore(novoCano, jogo)
         jogo.appendChild(novoCano)
 
         const espaco = novoCano.querySelector('.espaco')
@@ -118,9 +112,6 @@ function main() {
                     document.getElementById('pontuacao').innerText = pontuacaoAtual
                     document.getElementById('pontuacao-final').innerText = pontuacaoAtual
                 }
-
-                
-                // getPosicao() funciona com passaro, mas não com espaço
 
                 // checar colisão
                 const posicaoEspaco = {
