@@ -14,6 +14,10 @@ ideias para melhorar o código
     Transformar passaro em objeto com várias propriedades e métodos
 
     Usar função construtora para gerar novos canos
+
+    Estou tentando implementar um mutation observer no primeiro setInterval, sem sucesso
+    Também pensei em separar o componente que percebe o aperto de tecla do componente que de fato move o personagem
+        E organizar isso de uma forma mais interessante, simples e desacoplada
         
 */
 
@@ -23,7 +27,7 @@ const   jogo = document.querySelector('[wm-flappy]'),
         posicaoDireitaPassaro = parseFloat(passaro.getBoundingClientRect().right.toFixed(2)),
         posicaoEsquerdaPassaro = parseFloat(passaro.getBoundingClientRect().left.toFixed(2)),
         alturaDaTela = parseFloat(document.body.clientHeight),
-        posicaoBaixo = parseFloat(passaro.offsetHeight)
+        observerOptions = { attributes: true }
 
 function voar() {
     let alturaAtual = 0
@@ -40,31 +44,62 @@ function cair() {
 }
 
 function derrota() {
-    jogo.classList.remove('jogando')
-    jogo.classList.add('pausado')
+    jogo.setAttribute('status', 'gameover')
 }
+
+
 
 function main() {
     window.onkeydown = () => { 
-        passaro.classList.remove('caindo')
-        passaro.classList.add('voando')
+        passaro.setAttribute('movimento','voando')
     }
     
     window.onkeyup = () => {
-        passaro.classList.remove('voando')
-        passaro.classList.add('caindo')
+        passaro.setAttribute('movimento','caindo')
     }
 
+    // observa se o jogo está sendo executado
+    // verifica a posição do pássaro
+    // observa mudanças no atributo voando ou caindo (movimento)
+    // function observarMovimento() {
+
+    //     let posicaoTopoPassaro = parseFloat(passaro.offsetTop)
+
+
+    //     function callback(mutationList, observer) {
+    //         mutationList.forEach(function(mutation) {
+    //             if (mutation.type === 'attributes' && mutation.attributeName === 'movimento') {
+    //                 if (passaro.getAttribute('movimento') === 'voando') {
+    //                     posicaoTopoPassaro >= (0.008 * alturaDaTela) 
+    //                         ? voar() 
+    //                         : '';
+
+    //                 } else if( passaro.getAttribute('movimento') === 'caindo' 
+    //                             && posicaoTopoPassaro <= alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela)) {
+    //                     cair()
+    //                 } else if( posicaoTopoPassaro > alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela) ) {
+    //                     derrota()
+    //                 }
+    //             }
+    //         })
+    //     }
+
+    //     return new MutationObserver(callback)
+    // } 
+    
+    // observarMovimento().observe(passaro, observerOptions)
+
+
     setInterval( () => {
-        if (jogo.classList.contains('jogando')) {
+        if (jogo.getAttribute('status') === 'jogando') {
 
             const posicaoTopoPassaro = parseFloat(passaro.offsetTop)
 
             // vôo
-            if (passaro.classList.contains('voando')) {
+            if (passaro.getAttribute('movimento') === 'voando') {
                 posicaoTopoPassaro >= (0.008 * alturaDaTela) ? voar() : '';
             } else if (
-                passaro.classList.contains('caindo') 
+                passaro.getAttribute('movimento') === 'caindo' 
                 && posicaoTopoPassaro <= alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela)
             ) { cair() } 
             
@@ -100,7 +135,7 @@ function main() {
         document.body.insertBefore(novoCano, jogo)
 
         setInterval(() => {
-            if (jogo.classList.contains('jogando')) {
+            if (jogo.getAttribute('status') === 'jogando') {
                 let posicao = 0
                 posicao += parseFloat(novoCano.style.right)
                 
@@ -135,42 +170,39 @@ function main() {
     }
     
     setInterval(() => {
-        if (jogo.classList.contains('jogando')) {criarCano()}}, 1500)
+        if (jogo.getAttribute('status') === 'jogando') {criarCano()}}, 1500)
 
 }
 
 window.onkeydown = () => { 
     jogo.onkeydown = ''
-    jogo.classList.remove('pausado')
-    jogo.classList.add('jogando')
+    jogo.setAttribute('status','jogando')
 }
 
-// observador de mudança de classes para ativar o fim de jogo
-const options = {
-    attributes: true
-}
-  
-function callback(mutationList, observer) {
-    mutationList.forEach(function(mutation) {
-    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-        if (jogo.classList.contains('pausado')) {
-            const fim = document.querySelector('.fim')
-            const fundoPreto = document.querySelector('.fundo-preto')
-
-            fim.style.display = 'grid'
-            fundoPreto.style.display = 'block'
-
-            window.onkeydown = () => {
-                jogo.onkeydown = ''
-                document.location.reload(true)
+function observarStatus() {
+    function callback(mutationList, observer) {
+        mutationList.forEach(function(mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'status') {
+            if (jogo.getAttribute('status') === 'gameover') {
+                const fim = document.querySelector('.fim')
+                const fundoPreto = document.querySelector('.fundo-preto')
+    
+                fim.style.display = 'grid'
+                fundoPreto.style.display = 'block'
+    
+                window.onkeydown = () => {
+                    jogo.onkeydown = ''
+                    document.location.reload(true)
+                }
+    
+            } else if( jogo.getAttribute('status') === 'jogando') {
+                main()
             }
-
-        } else if( jogo.classList.contains('jogando')) {
-            main()
         }
+        })
     }
-    })
+
+    return new MutationObserver(callback)
 }
-  
-const observer = new MutationObserver(callback)
-observer.observe(jogo, options)
+
+observarStatus().observe(jogo, observerOptions)

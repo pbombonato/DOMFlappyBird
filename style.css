@@ -19,7 +19,7 @@ body {
     height: 100%;
 }
 
-[wm-flappy] {
+[wm-flappy]{
     z-index: -1;
     position: absolute;
     height: 100vh;
