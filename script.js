@@ -16,8 +16,45 @@ ideias para melhorar o código
     Estou tentando implementar um mutation observer no primeiro setInterval, sem sucesso
 
     getPosicao() funciona com passaro, mas não com espaço
+
+    Padrão observer:
+        class Observable()
+            constructor()
+            subscribe(observer)
+            unsubscribe(observer)
+            notify(dados)
+
+    Como aplicar:
+        Keyboard Event observável
+            Início: subscribe observers:
+                keydown -> voar()
+                    Voar precisa ser um setInterval quebrável
+                keyup -> cair()
+                    Cair precisa ser um setInterval quebrável
+            Fim: unsubscribe observers
+            
         
 */
+
+// class Observable {
+//     constructor() {
+//         this.observerList = []
+//     }
+
+//     subscribe(observer) {
+//         this.observerList = [...this.observerList, observer]
+//     }
+
+//     unsubscribe(observer) {
+//         this.observerList = this.observerList.filter(e => e !== observer)
+//     }
+
+//     notify(dados) {
+//         this.observerList.forEach(e => e(dados))
+//     }
+// }
+
+
 
 const   jogo = document.querySelector('[wm-flappy]'),
         passaro = document.getElementById('passaro'),
@@ -34,6 +71,53 @@ function getPosicao(elemento, lado) {
 } 
 
 function main() {
+
+    // ↓ Tentativa de implementar padrão observer, ainda sem sucesso
+
+    // const teclado = new Observable()
+
+    // function movimentar(keyPressed) {
+    //     const posicaoTopoPassaro = getPosicao(passaro, 'top')
+
+    //     function cair() {
+    //         return setInterval(() => {
+    //             let alturaAtual = 0
+    //             alturaAtual += parseFloat(passaro.style['top'])
+    //             passaro.style.top = `${alturaAtual + 0.5}vh`
+    //         }, 10)
+    //     } 
+
+    //     function voar() {
+    //         return setInterval(() => {
+                
+    //         let alturaAtual = 0
+    //         alturaAtual += parseFloat(passaro.style['top'])
+    //         passaro.style.top = `${alturaAtual - 0.8}vh`
+    //         }, 10)
+    //     }
+
+    //     if (jogo.getAttribute('status') === 'jogando'
+    //     && keyPressed
+    //     && posicaoTopoPassaro >= (0.008 * alturaDaTela)) {
+    //         console.log('arrow up')
+    //         voar()
+    //         clearInterval(cair())
+    //     }
+
+    //     if(jogo.getAttribute('status') === 'jogando'
+    //     && !keyPressed
+    //     && posicaoTopoPassaro <= alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela)) {
+    //         console.log('arrow down')  
+    //         cair()
+    //         clearInterval(voar())
+    //     }
+    // }
+
+    // teclado.subscribe(movimentar)
+
+    // window.addEventListener('keydown', e => teclado.notify(true))
+    // window.addEventListener('keyup', teclado.notify(false))
+
     function observarTeclado() {
         window.onkeydown = () => { 
             jogo.setAttribute('key-pressed', '')
@@ -74,6 +158,25 @@ function main() {
     observarTeclado(); movimentar();
 
     let pontuacaoAtual = 0
+
+    /* 
+    Missão: desacoplar essa função (talvez usar observers)
+    Responsabilidades atuais:
+        descrever e criar um cano
+        movimentar o cano criado
+        checar colisão do cano criado com o passaro
+        levar a derrota se houver colisão
+        criar um novo cano do zero a cada 1,5s
+
+    Ideias:
+        Padrão observer
+        clonar cano
+        Separar funções sem perder a referência 
+            Talvez usar um ID diferente para cada cano
+            Talvez monitorar a lista de childs do jogo
+            executar funções para o último elemento da lista?
+
+    */
 
     function criarCano() {
         const alturaCano1 = Math.floor(Math.random() * 9) + 1
