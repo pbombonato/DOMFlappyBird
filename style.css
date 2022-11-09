@@ -95,7 +95,7 @@ header > span {
 
 .boca {
     position: relative;
-    width: 100%;
+    width: calc(100% - 4px);
     grid-column: 1 / end;
     
     border: 2px solid #000;
