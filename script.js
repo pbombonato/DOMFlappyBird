@@ -267,7 +267,7 @@ function observarStatus() {
                 main()
             }
         }
-        })
+        })+
     }
 
     return new MutationObserver(callback)
