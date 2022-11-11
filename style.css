@@ -43,6 +43,7 @@ header {
     display: grid;
     grid-template-rows: 1fr;
     grid-template-columns: 9fr 1fr;
+    overflow: hidden;
 }
 
 header > h1 {
