@@ -1,276 +1,170 @@
-/* 
-ideias para melhorar o código
-    Usar cloneNode para simplificar a criação de novos obstáculos
-    Rever necessidade de setIntervals e possibilidade de criação de novos Observers
-    Rever nomes das variáveis e posição de declaração (para reduzir redeclarações desnecessárias)
-
-    Usar design patterns como factory e observer para simplificar e desacoplar o projeto
-        Diminuir as responsabilidades de cada componente do projeto
-
-    Transformar passaro em objeto com várias propriedades e métodos
-
-    Usar função construtora para gerar novos canos
-
-    função criarCanos está uma ameba, com infinitas responsabilidades. Tentar desacoplar sem perder a referência dos novos canos
-
-    Estou tentando implementar um mutation observer no primeiro setInterval, sem sucesso
-
-    getPosicao() funciona com passaro, mas não com espaço
-
-    Padrão observer:
-        class Observable()
-            constructor()
-            subscribe(observer)
-            unsubscribe(observer)
-            notify(dados)
-
-    Como aplicar:
-        Keyboard Event observável
-            Início: subscribe observers:
-                keydown -> voar()
-                    Voar precisa ser um setInterval quebrável
-                keyup -> cair()
-                    Cair precisa ser um setInterval quebrável
-            Fim: unsubscribe observers
-            
-        
-*/
-
-// class Observable {
-//     constructor() {
-//         this.observerList = []
-//     }
-
-//     subscribe(observer) {
-//         this.observerList = [...this.observerList, observer]
-//     }
-
-//     unsubscribe(observer) {
-//         this.observerList = this.observerList.filter(e => e !== observer)
-//     }
-
-//     notify(dados) {
-//         this.observerList.forEach(e => e(dados))
-//     }
-// }
-
-
-
-const   jogo = document.querySelector('[wm-flappy]'),
-        passaro = document.getElementById('passaro'),
-        alturaDoPassaro = passaro.clientHeight,
-        alturaDaTela = parseFloat(document.body.clientHeight),
-        observerOptions = { attributes: true }
-
-function derrota() {
-    jogo.setAttribute('status', 'gameover')
+function novoElemento(tagName, className) {
+    const elem = document.createElement(tagName)
+    elem.className = className
+    return elem
 }
 
-function getPosicao(elemento, lado) {
-    return parseFloat(elemento.getBoundingClientRect()[lado]).toFixed(2) 
-} 
+function Barreira(reversa = false) {
+    this.elemento = novoElemento('div', 'barreira')
 
-function main() {
+    const borda = novoElemento('div','borda')
+    const corpo = novoElemento('div', 'corpo')
+    this.elemento.appendChild(reversa ? corpo : borda)
+    this.elemento.appendChild(reversa ? borda : corpo)
 
-    // ↓ Tentativa de implementar padrão observer, ainda sem sucesso
+    this.setAltura = altura => corpo.style.height = `${altura}px`
+}
 
-    // const teclado = new Observable()
+function ParDeBarreiras(altura, abertura, x) {
+    this.elemento = novoElemento('div','par-de-barreiras')
 
-    // function movimentar(keyPressed) {
-    //     const posicaoTopoPassaro = getPosicao(passaro, 'top')
+    this.superior = new Barreira(true)
+    this.inferior = new Barreira(false)
 
-    //     function cair() {
-    //         return setInterval(() => {
-    //             let alturaAtual = 0
-    //             alturaAtual += parseFloat(passaro.style['top'])
-    //             passaro.style.top = `${alturaAtual + 0.5}vh`
-    //         }, 10)
-    //     } 
+    this.elemento.appendChild(this.superior.elemento)
+    this.elemento.appendChild(this.inferior.elemento)
 
-    //     function voar() {
-    //         return setInterval(() => {
-                
-    //         let alturaAtual = 0
-    //         alturaAtual += parseFloat(passaro.style['top'])
-    //         passaro.style.top = `${alturaAtual - 0.8}vh`
-    //         }, 10)
-    //     }
+    this.sortearAbertura = () => {
+        const alturaSuperior = Math.random() * (altura - abertura)
+        const alturaInferior = altura - abertura - alturaSuperior
+        this.superior.setAltura(alturaSuperior)
+        this.inferior.setAltura(alturaInferior)
+    }
 
-    //     if (jogo.getAttribute('status') === 'jogando'
-    //     && keyPressed
-    //     && posicaoTopoPassaro >= (0.008 * alturaDaTela)) {
-    //         console.log('arrow up')
-    //         voar()
-    //         clearInterval(cair())
-    //     }
+    this.getX = () => parseInt(this.elemento.style.left.split('px')[0])
+    this.setX = x => this.elemento.style.left = `${x}px`
+    this.getLargura = () => this.elemento.clientWidth
 
-    //     if(jogo.getAttribute('status') === 'jogando'
-    //     && !keyPressed
-    //     && posicaoTopoPassaro <= alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela)) {
-    //         console.log('arrow down')  
-    //         cair()
-    //         clearInterval(voar())
-    //     }
-    // }
+    this.sortearAbertura()
+    this.setX(x)
+}
 
-    // teclado.subscribe(movimentar)
+function Barreiras(altura, largura, abertura, espaco, notificarPonto) {
+    this.pares = [
+        new ParDeBarreiras(altura, abertura, largura + espaco),
+        new ParDeBarreiras(altura,abertura, largura + espaco * 2),
+        new ParDeBarreiras(altura, abertura, largura + espaco * 3),
+        new ParDeBarreiras(altura, abertura, largura + espaco * 4)
+    ]
 
-    // window.addEventListener('keydown', e => teclado.notify(true))
-    // window.addEventListener('keyup', teclado.notify(false))
+    this.animar = (deslocamento) => {
+        this.pares.forEach(par => {
+            par.setX(par.getX() - deslocamento) 
 
-    function observarTeclado() {
-        window.onkeydown = () => { 
-            jogo.setAttribute('key-pressed', '')
-        }
-        
-        window.onkeyup = () => {
-            jogo.removeAttribute('key-pressed')
+            // quando o elemento sair da tela
+            if(par.getX() < -par.getLargura()) {
+                par.setX(par.getX() + espaco * this.pares.length)
+                par.sortearAbertura()
+            }
+
+            const meio = largura / 2
+            const cruzouOMeio = par.getX() + deslocamento >= meio
+                && par.getX() < meio
+            if (cruzouOMeio) notificarPonto()
+        })
+    }
+}
+
+function Passaro(alturaJogo) {
+    let voando = false
+
+    this.elemento = novoElemento('img', 'passaro')
+    this.elemento.src = 'imgs/passaro.png'
+
+    this.getY = () => parseInt(this.elemento.style.bottom.split('px')[0])
+    this.setY = y => this.elemento.style.bottom = `${y}px`
+
+    window.onkeydown = e => voando = true
+    window.onkeyup = e => voando = false
+
+    this.animar = (velocidadeVoo, velocidadeQueda) => {
+        const novoY = this.getY() + (voando ? velocidadeVoo : -velocidadeQueda)
+        const alturaMaxima = alturaJogo - this.elemento.clientHeight
+
+        if (novoY <= 0) {
+            this.setY(0)
+        } else if (novoY >= alturaMaxima) {
+            this.setY(alturaMaxima)
+        } else {
+            this.setY(novoY)
         }
     }
+
+    this.setY(alturaJogo / 2)
+}
+
+function Progresso() {
+    this.elemento = novoElemento('span','progresso')
+    this.atualizarPontos = pontos => {
+        this.elemento.innerHTML = pontos
+    }
+    this.atualizarPontos(0)
     
-    function movimentar() {
-        function voar() {
-            let alturaAtual = 0
-            alturaAtual += parseFloat(passaro.style['top'])
-            passaro.style.top = `${alturaAtual - 0.8}vh`
-        }
-        
-        function cair() {
-            let alturaAtual = 0
-            alturaAtual += parseFloat(passaro.style['top'])
-            passaro.style.top = `${alturaAtual + 0.5}vh`
-        }
+}
 
-        setInterval(() => {
-            const posicaoTopoPassaro = getPosicao(passaro, 'top')
-            let keyPressed = jogo.hasAttribute('key-pressed')
+function estaoSobrepostos(elementoA, elementoB) {
+    const a = elementoA.getBoundingClientRect()
+    const b = elementoB.getBoundingClientRect()
 
-            if(jogo.getAttribute('status') === 'jogando') {
-                if (keyPressed && posicaoTopoPassaro >= (0.008 * alturaDaTela)) { voar() }
-                else if( !keyPressed && posicaoTopoPassaro <= alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela))
-                    { cair() }
-                else if( posicaoTopoPassaro > alturaDaTela - alturaDoPassaro - (0.005*alturaDaTela))
-                    { derrota() }
+    const horizontal = a.left + a.width >= b.left
+        && b.left + b.width >= a.left
+
+    const vertical = a.top + a.height >= b.top
+        && b.top + b.height >= a.top
+
+    return horizontal && vertical
+}
+
+function colidiu(passaro, barreiras) {
+    let colidiu = false
+    barreiras.pares.forEach(ParDeBarreiras => {
+        if(!colidiu) {
+            const superior = ParDeBarreiras.superior.elemento
+            const inferior = ParDeBarreiras.inferior.elemento
+            colidiu = estaoSobrepostos(passaro.elemento, superior) 
+                || estaoSobrepostos(passaro.elemento, inferior)
+        }
+    })
+
+    return colidiu
+}
+
+function FlappyBird(aberturaBarreiras = 235, 
+    distanciaBarreiras = 600, 
+    velocidadeBarreiras = 4,
+    velocidadeVoo = 7,
+    velocidadeQueda = 5) {
+
+    let pontos = 0
+
+    const areaDoJogo = document.querySelector('[wm-flappy]')
+    const altura = areaDoJogo.clientHeight
+    const largura = areaDoJogo.clientWidth
+
+    const progresso = new Progresso()
+    const barreiras = new Barreiras(altura, largura, aberturaBarreiras, distanciaBarreiras,
+        () => progresso.atualizarPontos(++pontos))
+    const passaro = new Passaro(altura)
+
+    areaDoJogo.appendChild(progresso.elemento)
+    areaDoJogo.appendChild(passaro.elemento)
+    barreiras.pares.forEach(par => areaDoJogo.appendChild(par.elemento))
+
+    this.start = () => {
+        // loop do jogo
+        const temporizador = setInterval(() => {
+            barreiras.animar(velocidadeBarreiras)
+            passaro.animar(velocidadeVoo, velocidadeQueda)
+
+            if(colidiu(passaro, barreiras)) {
+                clearInterval(temporizador)
+                window.onkeydown = e => document.location.reload(true)
             }
         }, 10)
-    }
-    
-    observarTeclado(); movimentar();
-
-    let pontuacaoAtual = 0
-
-    /* 
-    Missão: desacoplar essa função (talvez usar observers)
-    Responsabilidades atuais:
-        descrever e criar um cano
-        movimentar o cano criado
-        checar colisão do cano criado com o passaro
-        levar a derrota se houver colisão
-        criar um novo cano do zero a cada 1,5s
-
-    Ideias:
-        Padrão observer
-        clonar cano
-        Separar funções sem perder a referência 
-            Talvez usar um ID diferente para cada cano
-            Talvez monitorar a lista de childs do jogo
-            executar funções para o último elemento da lista?
-
-    */
-
-    function criarCano() {
-        const alturaCano1 = Math.floor(Math.random() * 9) + 1
-        const alturaCano2 = 10- alturaCano1
-        
-        const novoCano = document.createElement('div')
-        novoCano.classList.add('cano')
-        novoCano.style.right = '-14vw'
-        novoCano.style['grid-template-rows'] = `${alturaCano1}fr 25vh ${alturaCano2}fr` 
-
-        novoCano.innerHTML = 
-    `
-    <div class="cano1">
-        <div class="extensao"></div>
-        <div class="boca"></div>
-    </div>
-    <div class="espaco"></div>
-    <div class="cano2">
-        <div class="boca"></div>
-        <div class="extensao"></div>
-    </div>`;
-
-        jogo.appendChild(novoCano)
-
-        const espaco = novoCano.querySelector('.espaco')
-
-        setInterval(() => {
-            if (jogo.getAttribute('status') === 'jogando') {
-                let posicao = 0
-                posicao += parseFloat(novoCano.style.right)
-                
-                posicao >= 100 ? novoCano.remove() : novoCano.style.right = `${posicao + 0.20}vw`
-                
-                if(posicao == 50) {
-                    pontuacaoAtual++
-                    document.getElementById('pontuacao').innerText = pontuacaoAtual
-                    document.getElementById('pontuacao-final').innerText = pontuacaoAtual
-                }
-
-                // checar colisão
-                const posicaoEspaco = {
-                    topo: parseFloat(espaco.getBoundingClientRect().top.toFixed(2)),
-                    baixo: parseFloat(espaco.getBoundingClientRect().bottom.toFixed(2)),
-                    esquerda: parseFloat(espaco.getBoundingClientRect().left.toFixed(2)),
-                    direita: parseFloat(espaco.getBoundingClientRect().right.toFixed(2))
-                }
-                
-                const contatoNoY = getPosicao(passaro, 'top') <= posicaoEspaco.topo 
-                    || getPosicao(passaro, 'bottom') >= posicaoEspaco.baixo
-
-                const contatoNoX = getPosicao(passaro, 'right') >= posicaoEspaco.esquerda 
-                    && getPosicao(passaro, 'right') <= posicaoEspaco.direita
-
-                if(contatoNoX && contatoNoY) {
-                    derrota()
-                }
-            }
-        }, 5)
-    }
-    
-    setInterval(() => {
-        if (jogo.getAttribute('status') === 'jogando') {criarCano()}}, 1500)
-
+    }    
 }
 
-window.onkeydown = () => { 
+window.onkeydown = e => {
     window.onkeydown = ''
-    jogo.setAttribute('status','jogando')
+    new FlappyBird().start()
 }
-
-function observarStatus() {
-    function callback(mutationList, observer) {
-        mutationList.forEach(function(mutation) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'status') {
-            if (jogo.getAttribute('status') === 'gameover') {
-                const fim = document.querySelector('.fim')
-                const fundoPreto = document.querySelector('.fundo-preto')
-    
-                fim.style.display = 'grid'
-                fundoPreto.style.display = 'block'
-    
-                window.onkeydown = () => {
-                    window.onkeydown = ''
-                    document.location.reload(true)
-                }
-    
-            } else if( jogo.getAttribute('status') === 'jogando') {
-                main()
-            }
-        }
-        })+
-    }
-
-    return new MutationObserver(callback)
-}
-
-observarStatus().observe(jogo, observerOptions)

@@ -6,21 +6,31 @@
     <title>Flappy Bird</title>
     <link rel="shortcut icon" href="./imgs/passaro.png" type="image/x-icon">
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./flappy.css">
 </head>
 
-<body>
+<body class="conteudo">
     <header>
         <h1>Flappy Bird</h1>
-        <span id="pontuacao">0</span>
     </header>
-    <div wm-flappy status>
-        <div id="passaro" style="top:0vh"><img src="./imgs/passaro.png"></div>
-    </div>
-    <div class="fundo-preto" style="display:none"></div></div>
-    <div class="fim" style="display:none">
-        <h1><span id="pontuacao-final">0</span><br><br>Fim de jogo !</h1>
-    </div>
-    <script src="./script.js"></script>
+
+    <div wm-flappy></div>
+
+    <footer>
+        <div class="obrigado">
+            Obrigado por visitar meu projeto!
+        </div>
+        <div class="social">
+            <a href="https://github.com/pbombonato" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png">
+            </a>
+            <a href="https://www.linkedin.com/in/pablobombonato/" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/49/49408.png">
+            </a>
+        </div>
+    </footer>
+
+    <script src="./script.js"></script>  
 </body>
 
 </html>
