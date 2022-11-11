@@ -19,7 +19,7 @@ body {
     height: 100%;
 }
 
-[wm-flappy] {
+[wm-flappy]{
     z-index: -1;
     position: absolute;
     height: 100vh;
@@ -31,7 +31,7 @@ body {
     grid-template-rows: 1fr;
     grid-template-columns: 1fr;
     
-    background-color: skyblue;
+    background-color: deepskyblue;
 }
 
 header {
@@ -43,6 +43,7 @@ header {
     display: grid;
     grid-template-rows: 1fr;
     grid-template-columns: 9fr 1fr;
+    overflow: hidden;
 }
 
 header > h1 {
@@ -82,9 +83,9 @@ header > span {
     grid-column: 2 / 3;
     width: 8vw;
     
-    border-left: 2px solid white;
-    border-right: 2px solid white;
-    background-color: green;
+    border-left: 2px solid #000;
+    border-right: 2px solid #000;
+    background: linear-gradient(90deg, #639301, #a5e82e);
 }
 
 
@@ -95,11 +96,11 @@ header > span {
 
 .boca {
     position: relative;
-    width: 100%;
+    width: calc(100% - 4px);
     grid-column: 1 / end;
     
-    border: 2px solid white;
-    background-color: green;
+    border: 2px solid #000;
+    background: linear-gradient(90deg, #639301, #a5e82e);
 }
 
 .cano1 {
