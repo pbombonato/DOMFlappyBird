@@ -18,6 +18,10 @@ body {
     height: 100%;
 }
 
+h1 {
+    font-size: 3rem;
+}
+
 .conteudo {
     display: flex;
     flex-direction: column;
@@ -26,17 +30,36 @@ body {
 }
 
 footer {
-    display: grid;
-    grid-template-columns: 10fr 2fr;
-    grid-template-rows: 1fr;
-    width: 1150px;
+    display: flex;
+    flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 
+    margin-top: 10px;
     font-size: 2.5rem;
-    height: 70px;
+    width: 1200px;
+    height: 95px;
     overflow: hidden;
+}
+
+.social {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 300px;
+}
+
+footer a {
+    text-decoration: none;
 }
 
 footer img {
     height: 70px;
+    margin-left: 10px;
+}
+
+footer span {
+    margin-right: 20px;
+    margin-bottom: 15px;
+    font-size: 3rem;
 }

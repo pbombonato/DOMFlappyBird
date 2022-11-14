@@ -1,3 +1,21 @@
+/*
+Ideias:
+    No início do jogo:
+        Exibir "Pressione qualquer tecla para começar!"
+        Exibir animação do flappy bird acima
+
+
+    Função derrota:
+        exibir sobreposição escura
+        exibir pontuação centralizada
+        exibir "Fim de jogo"
+        exibir pequeno e abaixo e itálico "Pressione qualquer tecla para tentar de novo"
+
+    Css já foi feito, próximos passos:
+        Implementar função para criar elementos via JS
+        Deletar elementos via JS (Torna mais eficiente do que só ocultar)
+*/
+
 function novoElemento(tagName, className) {
     const elem = document.createElement(tagName)
     elem.className = className
@@ -168,3 +186,4 @@ window.onkeydown = e => {
     window.onkeydown = ''
     new FlappyBird().start()
 }
+
