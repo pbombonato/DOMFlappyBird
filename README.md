@@ -1,2 +1,12 @@
-# DOMFlappyBird
+# Flappy Bird
+
+Esse é um remake simples do jogo Flappy Bird. 
+
+## Recursos utilizados
+
+Para esse projeto, utilizei apenas HTML, CSS e vanilla JavaScript. O propósito do projeto foi praticar o uso de recursos da DOM. Abaixo, é possível visualizar o resultado final:
+
+![Demonstração do jogo](./imgs/demo.gif)
+
+[Clique aqui para jogar  :)](https://pbombonato.github.io/DOMFlappyBird/)
  
