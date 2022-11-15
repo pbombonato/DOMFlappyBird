@@ -131,7 +131,7 @@ function colidiu(passaro, barreiras) {
     return colidiu
 }
 
-function FlappyBird(aberturaBarreiras = 235, 
+function FlappyBird(aberturaBarreiras = 250, 
     distanciaBarreiras = 600, 
     velocidadeBarreiras = 4,
     velocidadeVoo = 7,
