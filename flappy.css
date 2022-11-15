@@ -7,12 +7,12 @@
 
 @font-face {
     font-family: 'Pixel';
-    src: url('../DOMFlappyBird/fonts/Pixel.ttf')
+    src: url('../flappy-bird-dom/fonts/Pixel.ttf')
 }
 
 @font-face {
     font-family: 'Oswald';
-    src: url('../DOMFlappyBird/fonts/Oswald-Regular.ttf') format('truetype');
+    src: url('../flappy-bird-dom/fonts/Oswald-Regular.ttf') format('truetype');
 }
 
 [wm-flappy] {
