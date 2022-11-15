@@ -8,5 +8,5 @@ Para esse projeto, utilizei apenas HTML, CSS e vanilla JavaScript. O propósito 
 
 ![Demonstração do jogo](./imgs/demo.gif)
 
-[Clique aqui para jogar  :)](https://pbombonato.github.io/DOMFlappyBird/)
+[Clique aqui para jogar  :)](https://pbombonato.github.io/flappy-bird-dom/)
  
