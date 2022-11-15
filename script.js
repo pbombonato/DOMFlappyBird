@@ -1,21 +1,3 @@
-/*
-Ideias:
-    No início do jogo:
-        Exibir "Pressione qualquer tecla para começar!"
-        Exibir animação do flappy bird acima
-
-
-    Função derrota:
-        exibir sobreposição escura
-        exibir pontuação centralizada
-        exibir "Fim de jogo"
-        exibir pequeno e abaixo e itálico "Pressione qualquer tecla para tentar de novo"
-
-    Css já foi feito, próximos passos:
-        Implementar função para criar elementos via JS
-        Deletar elementos via JS (Torna mais eficiente do que só ocultar)
-*/
-
 function novoElemento(tagName, className) {
     const elem = document.createElement(tagName)
     elem.className = className
@@ -113,11 +95,12 @@ function Passaro(alturaJogo) {
 
 function Progresso() {
     this.elemento = novoElemento('span','progresso')
+    const pontuacaoFinal = document.querySelector('[ending] > .pontuacao')
     this.atualizarPontos = pontos => {
         this.elemento.innerHTML = pontos
+        pontuacaoFinal.innerHTML = pontos
     }
     this.atualizarPontos(0)
-    
 }
 
 function estaoSobrepostos(elementoA, elementoB) {
@@ -141,6 +124,7 @@ function colidiu(passaro, barreiras) {
             const inferior = ParDeBarreiras.inferior.elemento
             colidiu = estaoSobrepostos(passaro.elemento, superior) 
                 || estaoSobrepostos(passaro.elemento, inferior)
+                || passaro.getY() <= 0
         }
     })
 
@@ -169,18 +153,24 @@ function FlappyBird(aberturaBarreiras = 235,
     barreiras.pares.forEach(par => areaDoJogo.appendChild(par.elemento))
 
     this.start = () => {
-        // loop do jogo
+        const intro = document.querySelector('[intro]')
+        intro.remove()
+
         const temporizador = setInterval(() => {
             barreiras.animar(velocidadeBarreiras)
             passaro.animar(velocidadeVoo, velocidadeQueda)
 
             if(colidiu(passaro, barreiras)) {
                 clearInterval(temporizador)
+                const ending = document.querySelector('[ending]')
+                ending.style.display = 'flex'
+
                 window.onkeydown = e => document.location.reload(true)
             }
         }, 10)
     }    
 }
+
 
 window.onkeydown = e => {
     window.onkeydown = ''
