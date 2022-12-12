@@ -9,14 +9,14 @@ const gulp = require('gulp'),
 function appHTML() {
     return gulp.src('src/**/*.html')
         .pipe(htmlmin({ collapseWhitespace: true }))
-        .pipe(gulp.dest('build'))
+        .pipe(gulp.dest('docs'))
 }
 
 function appCSS() {
     return gulp.src('src/assets/css/**/*.css')
         .pipe(uglifycss({ "uglyComments": true }))
         .pipe(concat('style.min.css'))
-        .pipe(gulp.dest('build/assets/css'))
+        .pipe(gulp.dest('docs/assets/css'))
 }
 
 function appJS() {
@@ -24,12 +24,12 @@ function appJS() {
         .pipe(babel({ presets: ['ENV'] }))
         .pipe(uglify())
         .pipe(concat('script.min.js'))
-        .pipe(gulp.dest('build/assets/js'))
+        .pipe(gulp.dest('docs/assets/js'))
 }
 
 function appIMG() {
     return gulp.src('src/assets/imgs/**/*.*')
-        .pipe(gulp.dest('build/assets/imgs'))
+        .pipe(gulp.dest('docs/assets/imgs'))
 }
 
 gulp.task('appHTML', appHTML)

@@ -3,7 +3,7 @@ const gulp = require('gulp'),
       webserver = require('gulp-webserver')
 
 function servidor() {
-    return gulp.src('build')
+    return gulp.src('docs')
         .pipe(webserver({
             port:8080,
             open:true,

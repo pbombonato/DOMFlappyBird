@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/pbombonato/flappy-bird-dom/issues"
   },
-  "homepage": "https://github.com/pbombonato/flappy-bird-dom/build",
+  "homepage": "https://github.com/pbombonato/flappy-bird-dom#readme",
   "devDependencies": {
     "babel-core": "6.26.3",
     "babel-preset-env": "1.7.0",
