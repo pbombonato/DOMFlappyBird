@@ -12,4 +12,4 @@ O propósito do projeto foi praticar o uso de recursos da DOM. Abaixo, é possí
 
 ![Demonstração do jogo](./build/assets/imgs/demo.gif)
 
-[Clique aqui para jogar  :)](https://pbombonato.github.io/flappy-bird-dom/)
+[Clique aqui para jogar  :)](https://pbombonato.github.io/flappy-bird-dom/build)
