@@ -1,5 +1,4 @@
-const gulp = require('gulp'),
-      { series, parallel } = require('gulp'),
+const { series, parallel } = require('gulp'),
       { appHTML, appCSS, appJS, appIMG } = require('./gulpTasks/app'),
       { depsFonts } = require('./gulpTasks/deps'),
       { monitorarArquivos, servidor } = require('./gulpTasks/servidor')
