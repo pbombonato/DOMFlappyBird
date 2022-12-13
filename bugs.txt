@@ -1,0 +1,32 @@
+Atualmente, a compilação com webpack não está funcionando.
+
+ERROR in ./src/flappy.css
+Module build failed (from ./node_modules/css-loader/dist/cjs.js):
+CssSyntaxError
+
+(2:7) C:\Users\xscru\OneDrive\Programação\Projetos\DOMFlappyBird\src\flappy.css Unknown word
+
+  1 | 
+> 2 |       import API from "!../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js";
+    |       ^
+  3 |       import domAPI from "!../node_modules/style-loader/dist/runtime/styleDomAPI.js";
+  4 |       import insertFn from "!../node_modules/style-loader/dist/runtime/insertBySelector.js";
+ @ ./src/index.js 2:0-22
+
+ERROR in ./src/style.css
+Module build failed (from ./node_modules/css-loader/dist/cjs.js):
+CssSyntaxError
+
+(2:7) C:\Users\xscru\OneDrive\Programação\Projetos\DOMFlappyBird\src\style.css Unknown word
+
+  1 |
+> 2 |       import API from "!../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js";
+    |       ^
+  3 |       import domAPI from "!../node_modules/style-loader/dist/runtime/styleDomAPI.js";
+  4 |       import insertFn from "!../node_modules/style-loader/dist/runtime/insertBySelector.js";
+ @ ./src/index.js 3:0-21
+
+ Ainda não descobri a causa dos erros. 
+
+ Tentei substituir Mini-css-extract-plugin e cssMinimizerPlugin por style-loader, mas o erro persistiu
+ 
